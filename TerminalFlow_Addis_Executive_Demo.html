@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="am">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TerminalFlow Addis — Pilot Demo</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#172033;--muted:#6b7280;--line:#e5e7eb;--accent:#155eef;--ok:#079455;--warn:#dc6803;--danger:#d92d20}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,#123b8f,#155eef);color:#fff;padding:22px 18px 18px;position:sticky;top:0;z-index:5}
+.brand{font-size:21px;font-weight:800}.sub{opacity:.85;font-size:13px;margin-top:4px}
+.net{margin-top:14px;display:flex;align-items:center;justify-content:space-between;background:#ffffff18;border:1px solid #ffffff30;border-radius:14px;padding:10px 12px}
+.dot{width:10px;height:10px;border-radius:50%;background:#12b76a;display:inline-block;margin-right:7px}.off .dot{background:#f79009}
+main{max-width:1050px;margin:auto;padding:16px}.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:15px}
+.tab{border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 5px;font-weight:700;color:#475467}.tab.active{background:#155eef;color:#fff;border-color:#155eef}
+.view{display:none}.view.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 3px 12px #10182808}
+.kpi .label{font-size:12px;color:var(--muted)}.kpi .num{font-size:25px;font-weight:800;margin-top:6px}.ok{color:var(--ok)}.warn{color:var(--warn)}
+h2{font-size:18px;margin:5px 0 14px}.section{margin-top:14px}
+label{display:block;font-size:13px;font-weight:700;margin:10px 0 6px}input,select{width:100%;padding:13px;border:1px solid #d0d5dd;border-radius:11px;background:#fff;font-size:16px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.btn{border:0;border-radius:11px;padding:13px 15px;font-size:15px;font-weight:800;cursor:pointer;margin-top:12px}.primary{background:#155eef;color:#fff}.secondary{background:#eef4ff;color:#155eef}.dark{background:#172033;color:#fff}.danger{background:#fee4e2;color:#b42318}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:800}.paid{background:#dcfae6;color:#067647}.pending{background:#fef0c7;color:#b54708}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px 7px;border-bottom:1px solid var(--line)}th{color:#667085}
+.scroll{overflow:auto}.hero{background:linear-gradient(135deg,#eff4ff,#fff);border:1px solid #d9e4ff}.hero h1{font-size:25px;margin:0 0 6px}.hero p{color:#475467;margin:0;line-height:1.5}
+.alert{padding:11px 12px;border-radius:11px;background:#fff4e5;color:#9a3412;margin-top:10px;font-size:13px}
+.small{font-size:12px;color:var(--muted);line-height:1.5}.empty{text-align:center;padding:30px;color:var(--muted)}
+@media(max-width:760px){.grid{grid-template-columns:repeat(2,1fr)}.tabs{grid-template-columns:repeat(4,1fr)}.tab{font-size:12px}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">🚕 TerminalFlow Addis</div>
+  <div class="sub">Terminal Payment & Traffic Flow — Pilot Demonstration</div>
+  <div class="net" id="netBox"><span><span class="dot"></span><b id="netText">Network ON</b></span><button class="btn secondary" style="margin:0;padding:8px 11px" onclick="toggleNetwork()">Network OFF</button></div>
+</header>
+
+<main>
+<div class="tabs">
+<button class="tab active" onclick="show('dash',this)">Dashboard</button>
+<button class="tab" onclick="show('pay',this)">Vehicle & Pay</button>
+<button class="tab" onclick="show('queue',this)">Offline Queue</button>
+<button class="tab" onclick="show('report',this)">Reports</button>
+</div>
+
+<section id="dash" class="view active">
+<div class="card hero">
+<h1>Megenagna Pilot</h1><p>የተሽከርካሪ የTerminal Fee ክፍያን በፍጥነት ለመመዝገብ፣ ኔትወርክ ሲቋረጥ ክፍያውን በቁጥጥር ስር ለማስቀመጥ እና ከዚያ ለማመሳሰል የDemo ስርዓት።</p>
+</div>
+<div class="grid section">
+<div class="card kpi"><div class="label">Vehicles processed</div><div class="num" id="kVehicles">0</div></div>
+<div class="card kpi"><div class="label">Verified revenue</div><div class="num ok" id="kPaid">0 Br</div></div>
+<div class="card kpi"><div class="label">Pending</div><div class="num warn" id="kPending">0 Br</div></div>
+<div class="card kpi"><div class="label">Transactions</div><div class="num" id="kTx">0</div></div>
+</div>
+<div class="card section">
+<h2>🔄 Live Demo Flow</h2>
+<div class="small">1. Vehicle ጨምር → 2. Pay 25 Br → 3. Network OFF አድርግ → 4. ክፍያ ፈጽም → 5. Network ON → 6. Sync All → 7. Report ተመልከት።</div>
+<button class="btn primary" onclick="showById('pay')">Start Vehicle Demo →</button>
+</div>
+</section>
+
+<section id="pay" class="view">
+<div class="card">
+<h2>🚕 Vehicle Payment</h2>
+<div class="row">
+<div><label>Vehicle / Plate Number</label><input id="plate" placeholder="ለምሳሌ 3-A12345"></div>
+<div><label>Vehicle Type</label><select id="type"><option>Taxi — 13 Seat</option><option>Minibus</option><option>Bus</option></select></div>
+</div>
+<div class="row">
+<div><label>Terminal</label><select id="terminal"><option>Megenagna</option><option>Mexico</option><option>Autobis Tera</option><option>Merkato</option></select></div>
+<div><label>Terminal Fee</label><input value="25 Br" disabled></div>
+</div>
+<button class="btn primary" onclick="processPayment()">Record 25 Br Payment</button>
+<div id="payMsg"></div>
+<div class="alert">⚠️ Demo only: ይህ እውነተኛ Telebirr/Bank ገንዘብ አይቀበልም። የስርዓቱን የስራ ሂደት ለማሳየት ብቻ ነው።</div>
+</div>
+<div class="card section"><h2>Recent Transactions</h2><div id="recent"></div></div>
+</section>
+
+<section id="queue" class="view">
+<div class="card">
+<h2>⏳ Offline Queue</h2>
+<div class="small">Network ሲጠፋ የተመዘገቡ ክፍያዎች እዚህ ይቆያሉ። Network ሲመለስ Sync All ይጫኑ።</div>
+<button class="btn primary" onclick="syncAll()">🔄 Sync All Pending</button>
+<div class="section" id="queueList"></div>
+</div>
+</section>
+
+<section id="report" class="view">
+<div class="grid">
+<div class="card kpi"><div class="label">Expected revenue</div><div class="num" id="rExpected">0 Br</div></div>
+<div class="card kpi"><div class="label">Verified</div><div class="num ok" id="rVerified">0 Br</div></div>
+<div class="card kpi"><div class="label">Pending</div><div class="num warn" id="rPend">0 Br</div></div>
+<div class="card kpi"><div class="label">Success rate</div><div class="num" id="rRate">0%</div></div>
+</div>
+<div class="card section"><h2>🧾 Transaction Audit Log</h2><div class="scroll"><table><thead><tr><th>ID</th><th>Vehicle</th><th>Terminal</th><th>Time</th><th>Status</th></tr></thead><tbody id="audit"></tbody></table></div></div>
+<div class="card section"><button class="btn danger" onclick="resetDemo()">Reset Demo Data</button><div class="small" style="margin-top:8px">ለአዲስ ማሳያ ሁሉንም Demo መረጃ ይሰርዛል።</div></div>
+</section>
+</main>
+
+<script>
+const KEY="terminalflow_addis_demo_v2";
+let data=JSON.parse(localStorage.getItem(KEY)||'{"network":true,"tx":[],"seq":1001}');
+const save=()=>localStorage.setItem(KEY,JSON.stringify(data));
+function money(n){return n.toLocaleString()+" Br"}
+function show(id,btn){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render()}
+function showById(id){let i=['dash','pay','queue','report'].indexOf(id);let tabs=document.querySelectorAll('.tab');show(id,tabs[i])}
+function toggleNetwork(){data.network=!data.network;save();render()}
+function uid(){return "TF-"+new Date().getFullYear()+"-"+data.seq++}
+function processPayment(){
+ const plate=document.getElementById('plate').value.trim();
+ if(!plate){document.getElementById('payMsg').innerHTML='<div class="alert">⚠️ እባክዎ የተሽከርካሪ ቁጥር ያስገቡ።</div>';return}
+ const t={id:uid(),plate,type:document.getElementById('type').value,terminal:document.getElementById('terminal').value,amount:25,status:data.network?'PAID':'PENDING',time:new Date().toLocaleString()};
+ data.tx.unshift(t);save();document.getElementById('plate').value='';
+ document.getElementById('payMsg').innerHTML='<div class="alert" style="background:#ecfdf3;color:#067647">✅ '+t.id+' — '+(t.status==='PAID'?'Payment verified':'Saved to offline queue')+'</div>';
+ render();
+}
+function syncAll(){if(!data.network){alert("Network OFF. Turn Network ON first.");return}data.tx.forEach(t=>{if(t.status==='PENDING')t.status='PAID'});save();render()}
+function resetDemo(){if(confirm("Reset all demo data?")){data={network:true,tx:[],seq:1001};save();render()}}
+function render(){
+ document.getElementById('netText').textContent=data.network?'Network ON':'Network OFF';
+ document.getElementById('netBox').classList.toggle('off',!data.network);
+ document.getElementById('netBox').querySelector('button').textContent=data.network?'Network OFF':'Network ON';
+ const paid=data.tx.filter(t=>t.status==='PAID').length*25, pending=data.tx.filter(t=>t.status==='PENDING').length*25;
+ document.getElementById('kVehicles').textContent=data.tx.length;document.getElementById('kPaid').textContent=money(paid);document.getElementById('kPending').textContent=money(pending);document.getElementById('kTx').textContent=data.tx.length;
+ document.getElementById('rExpected').textContent=money(data.tx.length*25);document.getElementById('rVerified').textContent=money(paid);document.getElementById('rPend').textContent=money(pending);document.getElementById('rRate').textContent=(data.tx.length?Math.round(paid/(data.tx.length*25)*100):0)+"%";
+ document.getElementById('recent').innerHTML=data.tx.slice(0,6).map(t=>`<div style="padding:10px 0;border-bottom:1px solid #eee"><b>${t.plate}</b> · ${t.terminal}<br><span class="small">${t.id} · ${t.time}</span> <span class="badge ${t.status==='PAID'?'paid':'pending'}">${t.status}</span></div>`).join('')||'<div class="empty">No transactions yet.</div>';
+ document.getElementById('queueList').innerHTML=data.tx.filter(t=>t.status==='PENDING').map(t=>`<div class="card" style="margin-top:9px"><b>${t.plate}</b> — ${t.terminal}<br><span class="small">${t.id} · ${t.time}</span><span class="badge pending" style="float:right">PENDING · 25 Br</span></div>`).join('')||'<div class="empty">Offline Queue ባዶ ነው።</div>';
+ document.getElementById('audit').innerHTML=data.tx.map(t=>`<tr><td>${t.id}</td><td>${t.plate}</td><td>${t.terminal}</td><td>${t.time}</td><td><span class="badge ${t.status==='PAID'?'paid':'pending'}">${t.status}</span></td></tr>`).join('')||'<tr><td colspan="5" class="empty">No data</td></tr>';
+}
+render();
+</script>
+</body>
+</html>
